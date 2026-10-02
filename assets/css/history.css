@@ -1,0 +1,5 @@
+/* Estilos específicos del historial */
+
+body[data-page="history"] {
+  background: #f8fafc;
+}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historial y trazabilidad Jira</title>
+  <link rel="icon" type="image/png" href="assets/img/ImaginiALogo.png" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href="assets/css/history.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <style>
+    .history-layout {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .history-filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .history-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .history-item {
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .history-topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .history-item p {
+      margin: 0 0 12px;
+    }
+
+    .history-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+
+<body data-page="history">
+  <div class="history-layout">
+    <header class="history-header">
+      <div>
+        <p class="eyebrow">Trazabilidad histórica</p>
+        <h1>Registros pasados y seguimiento por caso</h1>
+      </div>
+
+      <a href="index.html">
+        <button class="secondary">Volver al dashboard</button>
+      </a>
+    </header>
+
+    <section class="card filters">
+      <div class="filter-row">
+        <label>
+          Estado
+          <select id="historyFilterState">
+            <option value="">Todos</option>
+          </select>
+        </label>
+
+        <label>
+          Responsable
+          <select id="historyFilterResponsible">
+            <option value="">Todos</option>
+          </select>
+        </label>
+
+        <!-- <label>
+            Prioridad
+            <select id="historyFilterPriority">
+              <option value="">Todas</option>
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+              <option value="Sin prioridad">Sin prioridad</option>
+            </select>
+          </label> -->
+
+        <label>
+          Desde
+          <input id="historyDateFrom" type="date" />
+        </label>
+
+        <label>
+          Hasta
+          <input id="historyDateTo" type="date" />
+        </label>
+
+        <label>
+          Escalado
+          <select id="historyEscalatedOnly">
+            <option value="all">Todos</option>
+            <option value="escalados">Solo escalados</option>
+            <option value="no-escalados">Sin escalar</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section id="historyList" class="history-list"></section>
+  </div>
+
+  <script src="assets/js/api/firebase.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+
+</html>

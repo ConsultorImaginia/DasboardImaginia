@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detalle por caso</title>
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/dashboard.css" />
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  </head>
+  <body data-page="detail">
+    <main class="app-shell detail-page">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Trazabilidad</p>
+          <h1>Detalle por caso</h1>
+        </div>
+        <a href="index.html"><button class="secondary">Volver al dashboard</button></a>
+      </header>
+
+      <div id="detailStatus" class="status-message">Cargando caso…</div>
+
+      <section id="detailCaseCard" class="card detail-card"></section>
+
+      <section class="card detail-timeline-card">
+        <div class="table-header">
+          <h2>Historial de cambios</h2>
+        </div>
+        <div id="detailTimeline" class="timeline"></div>
+      </section>
+    </main>
+
+    <script src="assets/js/api/firebase.js"></script>
+    <script src="assets/js/detail.js"></script>
+  </body>
+</html>

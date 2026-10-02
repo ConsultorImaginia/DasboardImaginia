@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    match /uploads/{uploadId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSignedIn();
+    }
+
+    match /cases/{caseId} {
+      allow read: if true;
+      allow create, update, delete: if isSignedIn();
+
+      match /history/{historyId} {
+        allow read: if true;
+        allow create, update, delete: if isSignedIn();
+      }
+    }
+  }
+}

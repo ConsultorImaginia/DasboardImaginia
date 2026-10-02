@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard ImaginIA</title>
+  <!-- Favicon / Logo de la pestaña -->
+  <link rel="icon" type="image/png" href="assets/img/ImaginiALogo.png" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href="assets/css/dashboard.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+</head>
+
+<body data-page="dashboard">
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Gestión operativa</p>
+        <h1>Dashboard de casos Jira</h1>
+      </div>
+
+      <div class="header-actions">
+        <button id="btnLoadFile" class="primary">Cargar Excel</button>
+        <button id="btnHistory" class="secondary">Ver historial</button>
+        <button id="btnSaveFirebase" class="secondary">Guardar en Firebase</button>
+        <input id="excelInput" type="file" accept=".xlsx,.xls,.csv" hidden />
+      </div>
+    </header>
+
+    <section class="filters card">
+      <div class="filter-row">
+        <label>
+          Estado
+          <select id="filterState">
+            <option value="">Todos</option>
+          </select>
+        </label>
+
+        <label>
+          Responsable
+          <select id="filterResponsible">
+            <option value="">Todos</option>
+          </select>
+        </label>
+
+        <!--<label>
+            Prioridad
+            <select id="filterPriority">
+              <option value="">Todas</option>
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+              <option value="Sin prioridad">Sin prioridad</option>
+            </select>
+          </label> -->
+
+        <label>
+          Desde
+          <input id="dateFrom" type="date" />
+        </label>
+
+        <label>
+          Hasta
+          <input id="dateTo" type="date" />
+        </label>
+
+        <label>
+          Escalado
+          <select id="filterEscalated">
+            <option value="all">Todos</option>
+            <option value="escalados">Solo escalados</option>
+            <option value="no-escalados">Sin escalar</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <div id="statusMessage" class="status-message">
+      Carga tu Excel para empezar. Los datos se procesan en el navegador.
+    </div>
+
+    <main id="dashboardContent" hidden>
+      <section class="kpis-grid">
+        <article class="card stat">
+          <span class="stat-label">Total de casos</span>
+          <strong id="kpiTotal">0</strong>
+        </article>
+
+        <article class="card stat">
+          <span class="stat-label">Activos</span>
+          <strong id="kpiActive">0</strong>
+        </article>
+
+        <article class="card stat">
+          <span class="stat-label">Cerrados</span>
+          <strong id="kpiClosed">0</strong>
+        </article>
+
+        <article class="card stat">
+          <span class="stat-label">Promedio días en estado actual</span>
+          <strong id="kpiAvgDays">0</strong>
+        </article>
+
+        <article class="card stat">
+          <span class="stat-label">Cambios de estado</span>
+          <strong id="kpiChanges">0</strong>
+        </article>
+      </section>
+
+      <section class="charts-grid">
+        <article class="card chart-card">
+          <h2>Casos por estado actual</h2>
+          <div class="chart-wrap">
+            <canvas id="chartEstado"></canvas>
+          </div>
+        </article>
+
+        <article class="card chart-card">
+          <h2>Casos por responsable</h2>
+          <div class="chart-wrap">
+            <canvas id="chartResponsable"></canvas>
+          </div>
+        </article>
+
+        <article class="card chart-card">
+          <h2>Movimiento</h2>
+          <div class="chart-wrap">
+            <canvas id="chartMovimientos"></canvas>
+          </div>
+        </article>
+      </section>
+
+      <section class="card table-card">
+        <div class="table-header">
+          <h2>Detalle</h2>
+          <button id="btnExportCsv" class="secondary small">Exportar CSV</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Id JIRA</th>
+                <th>Resumen</th>
+                <th>Responsable</th>
+                <th>Prioridad</th>
+                <th>Creación</th>
+                <th>Estado inicial</th>
+                <th>Estado actual</th>
+                <th>Última revisión</th>
+                <th>Días en estado actual</th>
+                <th>Cambios</th>
+                <th>Antigüedad</th>
+                <th>Trazabilidad</th>
+              </tr>
+            </thead>
+            <tbody id="tableCases"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/js/api/firebase.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+
+</html>

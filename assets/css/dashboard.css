@@ -1,0 +1,5 @@
+/* Estilos específicos del dashboard */
+
+body[data-page="dashboard"] {
+  background: #f5f7fb;
+}
