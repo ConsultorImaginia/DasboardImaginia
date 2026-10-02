@@ -2,13 +2,16 @@
 <html lang="es">
 
 <head>
+  <!-- Define codificación, escala adaptable y título de la pestaña. -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard ImaginIA</title>
   <!-- Favicon / Logo de la pestaña -->
+  <!-- Carga identidad visual, estilos comunes y estilos específicos del dashboard. -->
   <link rel="icon" type="image/png" href="assets/img/ImaginiALogo.png" />
   <link rel="stylesheet" href="assets/css/styles.css" />
   <link rel="stylesheet" href="assets/css/dashboard.css" />
+  <!-- Carga bibliotecas externas para leer Excel, dibujar gráficos y conectar Firebase. -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -17,7 +20,9 @@
 </head>
 
 <body data-page="dashboard">
+  <!-- Contenedor principal de la vista operativa. -->
   <div class="app-shell">
+    <!-- Encabezado con acciones de carga, navegación y persistencia. -->
     <header class="topbar">
       <div>
         <p class="eyebrow">Gestión operativa</p>
@@ -32,6 +37,7 @@
       </div>
     </header>
 
+    <!-- Controles para reducir los casos por estado, responsable, fecha y escalamiento. -->
     <section class="filters card">
       <div class="filter-row">
         <label>
@@ -83,11 +89,14 @@
       </div>
     </section>
 
+    <!-- Mensaje de inicio, progreso y resultado de las acciones del usuario. -->
     <div id="statusMessage" class="status-message">
       Carga tu Excel para empezar. Los datos se procesan en el navegador.
     </div>
 
+    <!-- Panel de resultados: indicadores, gráficos y tabla se muestran tras cargar datos. -->
     <main id="dashboardContent" hidden>
+      <!-- Indicadores agregados del conjunto de casos filtrado. -->
       <section class="kpis-grid">
         <article class="card stat">
           <span class="stat-label">Total de casos</span>
@@ -115,6 +124,7 @@
         </article>
       </section>
 
+      <!-- Visualizaciones de estados, responsables y movimiento de casos. -->
       <section class="charts-grid">
         <article class="card chart-card">
           <h2>Casos por estado actual</h2>
@@ -138,6 +148,7 @@
         </article>
       </section>
 
+      <!-- Tabla detallada con acceso a la trazabilidad individual de cada caso. -->
       <section class="card table-card">
         <div class="table-header">
           <h2>Detalle</h2>
@@ -169,6 +180,7 @@
     </main>
   </div>
 
+  <!-- Inicializa la integración de datos antes del controlador de la página. -->
   <script src="assets/js/api/firebase.js"></script>
   <script src="assets/js/main.js"></script>
 </body>

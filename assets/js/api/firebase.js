@@ -1,4 +1,6 @@
+// Aísla la integración con Firebase para no añadir variables temporales al ámbito global.
 (function () {
+  // Credenciales del proyecto; deben completarse para habilitar la conexión real.
   const firebaseConfig = {
     apiKey: "",
     authDomain: "",
@@ -8,6 +10,7 @@
     appId: ""
   };
 
+  // Conserva la API global si ya existe y centraliza el estado de la conexión.
   window.JiraFirebase = window.JiraFirebase || {};
 
   const state = {
@@ -17,6 +20,7 @@
     mockMode: false
   };
 
+  // Comprueba que las credenciales obligatorias estén presentes antes de iniciar Firebase.
   function isConfigReady() {
     return Boolean(
       firebaseConfig.apiKey &&
@@ -27,18 +31,19 @@
     );
   }
 
+  // Inicializa Firestore y Storage una sola vez, o activa el modo local de pruebas.
   function initFirebase() {
     if (state.initialized) return true;
 
     if (!window.firebase) {
-      console.warn("Firebase no est� cargado. Revisa los scripts de Firebase en el HTML.");
+      console.warn("Firebase no está cargado. Revisa los scripts de Firebase en el HTML.");
       state.mockMode = true;
       state.initialized = true;
       return false;
     }
 
     if (!isConfigReady()) {
-      console.warn("Firebase no est� configurado. Se activar� el modo mock para pruebas locales.");
+      console.warn("Firebase no está configurado. Se activará el modo mock para pruebas locales.");
       state.mockMode = true;
       state.initialized = true;
       return false;
@@ -60,6 +65,7 @@
     }
   }
 
+  // Completa campos ausentes y asegura tipos estables al recibir un caso de Firestore.
   function normalizeCaseRecord(item = {}) {
     return {
       ...item,
@@ -73,11 +79,13 @@
     };
   }
 
+  // Sube el Excel a Storage; el modo mock devuelve metadatos de prueba sin conexión.
   async function uploadExcelToStorage(file) {
     if (state.mockMode || !state.storage) {
       return { uploadId: "mock-upload", url: "" };
     }
 
+    // Usa una ruta única para reducir colisiones entre archivos con el mismo nombre.
     const storagePath = `uploads/${Date.now()}-${file.name}`;
     const ref = state.storage.ref(storagePath);
     await ref.put(file);
@@ -86,6 +94,7 @@
     return { uploadId: storagePath, url };
   }
 
+  // Registra en Firestore el nombre, número de filas y ubicación del archivo cargado.
   async function saveUploadRecord(fileName, rowCount, uploadId, url) {
     if (state.mockMode || !state.db) {
       return null;
@@ -103,14 +112,16 @@
     return doc.id;
   }
 
+  // Guarda cada caso y sus eventos de historial en colecciones de Firestore.
   async function saveCasesToFirebase(cases) {
     if (state.mockMode || !state.db) {
-      console.warn("No se guard� en Firebase porque el proyecto est� en modo mock. Configura firebaseConfig.");
+      console.warn("No se guardó en Firebase porque el proyecto está en modo mock. Configura firebaseConfig.");
       return { saved: false };
     }
 
     const batch = [];
 
+    // Prepara las escrituras del caso y sus cambios antes de ejecutarlas en paralelo.
     for (const item of cases) {
       const docRef = state.db.collection("cases").doc(item.caseId);
       const baseData = {
@@ -143,11 +154,13 @@
     return { saved: true, total: cases.length };
   }
 
+  // Consulta casos en Firestore, aplica filtros disponibles e incorpora su historial.
   async function loadCasesFromFirebase(filters = {}) {
     if (state.mockMode || !state.db) {
       return [];
     }
 
+    // Construye la consulta de forma incremental según los filtros recibidos.
     let queryRef = state.db.collection("cases");
 
     if (filters.responsible) {
@@ -181,6 +194,7 @@
     return items;
   }
 
+  // Recupera un caso y sus cambios por identificador, con respaldo en modo local.
   async function loadCaseById(caseId) {
     if (!caseId) return null;
 
@@ -198,6 +212,7 @@
     return data;
   }
 
+  // Publica las operaciones que consumen las vistas y servicios del dashboard.
   window.JiraFirebase.init = initFirebase;
   window.JiraFirebase.uploadExcelToStorage = uploadExcelToStorage;
   window.JiraFirebase.saveUploadRecord = saveUploadRecord;

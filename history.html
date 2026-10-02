@@ -2,21 +2,26 @@
 <html lang="es">
 
 <head>
+  <!-- Define codificación, escala adaptable y nombre de esta vista. -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Historial y trazabilidad Jira</title>
+  <!-- Carga estilos globales y de historial junto con el SDK de Firebase. -->
   <link rel="icon" type="image/png" href="assets/img/ImaginiALogo.png" />
   <link rel="stylesheet" href="assets/css/styles.css" />
   <link rel="stylesheet" href="assets/css/history.css" />
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <!-- Ajustes de presentación propios de la lista histórica. -->
   <style>
+    /* Centra el contenido del historial y limita su ancho de lectura. */
     .history-layout {
       max-width: 1100px;
       margin: 0 auto;
     }
 
+    /* Alinea el título y el enlace de regreso en la cabecera. */
     .history-header {
       display: flex;
       justify-content: space-between;
@@ -25,6 +30,7 @@
       margin-bottom: 18px;
     }
 
+    /* Distribuye los filtros en columnas adaptables. */
     .history-filter-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -32,12 +38,14 @@
       margin-bottom: 18px;
     }
 
+    /* Apila los registros históricos con separación uniforme. */
     .history-list {
       display: grid;
       grid-template-columns: 1fr;
       gap: 12px;
     }
 
+    /* Presentación de cada caso en la lista del historial. */
     .history-item {
       padding: 16px;
       border: 1px solid var(--line);
@@ -46,6 +54,7 @@
       box-shadow: var(--shadow);
     }
 
+    /* Coloca el identificador y el distintivo de escalamiento en una fila. */
     .history-topline {
       display: flex;
       justify-content: space-between;
@@ -54,10 +63,12 @@
       margin-bottom: 8px;
     }
 
+    /* Separa el resumen del caso de sus metadatos. */
     .history-item p {
       margin: 0 0 12px;
     }
 
+    /* Distribuye responsable, estado, prioridad y fecha de revisión. */
     .history-meta {
       display: flex;
       flex-wrap: wrap;
@@ -70,7 +81,9 @@
 </head>
 
 <body data-page="history">
+  <!-- Contenedor de la vista de registros anteriores. -->
   <div class="history-layout">
+    <!-- Título de la vista y navegación de regreso al dashboard. -->
     <header class="history-header">
       <div>
         <p class="eyebrow">Trazabilidad histórica</p>
@@ -82,6 +95,7 @@
       </a>
     </header>
 
+    <!-- Filtros para localizar registros por atributos y periodo de revisión. -->
     <section class="card filters">
       <div class="filter-row">
         <label>
@@ -133,9 +147,11 @@
       </div>
     </section>
 
+    <!-- El controlador inserta aquí los casos que coinciden con los filtros. -->
     <section id="historyList" class="history-list"></section>
   </div>
 
+  <!-- Carga primero el acceso a datos y después el controlador compartido de vistas. -->
   <script src="assets/js/api/firebase.js"></script>
   <script src="assets/js/main.js"></script>
 </body>

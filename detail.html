@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
+    <!-- Define codificación, escala adaptable y título de la página de detalle. -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Detalle por caso</title>
+    <!-- Reutiliza estilos de la aplicación y carga las dependencias de Firestore. -->
     <link rel="stylesheet" href="assets/css/styles.css" />
     <link rel="stylesheet" href="assets/css/dashboard.css" />
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   </head>
   <body data-page="detail">
+    <!-- Presenta datos del caso seleccionado y su secuencia de cambios. -->
     <main class="app-shell detail-page">
       <header class="topbar">
         <div>
@@ -19,10 +22,13 @@
         <a href="index.html"><button class="secondary">Volver al dashboard</button></a>
       </header>
 
+      <!-- Informa el resultado de buscar el caso solicitado en la URL. -->
       <div id="detailStatus" class="status-message">Cargando caso…</div>
 
+      <!-- El script inserta aquí los atributos principales del caso. -->
       <section id="detailCaseCard" class="card detail-card"></section>
 
+      <!-- El script inserta aquí la cronología de cambios de estado. -->
       <section class="card detail-timeline-card">
         <div class="table-header">
           <h2>Historial de cambios</h2>
@@ -31,6 +37,7 @@
       </section>
     </main>
 
+    <!-- Inicializa el acceso a datos antes de ejecutar el controlador de detalle. -->
     <script src="assets/js/api/firebase.js"></script>
     <script src="assets/js/detail.js"></script>
   </body>

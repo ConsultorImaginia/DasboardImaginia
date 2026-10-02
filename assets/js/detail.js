@@ -1,7 +1,9 @@
+// Espera a que el DOM exista antes de buscar los elementos de la vista de detalle.
 document.addEventListener("DOMContentLoaded", () => {
   initDetailPage();
 });
 
+// Recupera los casos locales y devuelve una lista vacía si el JSON está dañado.
 function readStoredCases() {
   try {
     return JSON.parse(localStorage.getItem("jira-dashboard-cases") || "[]");
@@ -10,6 +12,7 @@ function readStoredCases() {
   }
 }
 
+// Obtiene el identificador de la URL, carga el caso y coordina el renderizado de la página.
 async function initDetailPage() {
   const params = new URLSearchParams(window.location.search);
   const caseId = params.get("caseId");
@@ -24,6 +27,7 @@ async function initDetailPage() {
     return;
   }
 
+  // Busca primero en el almacenamiento local y consulta Firebase si no hay coincidencia.
   let caseRecord = readStoredCases().find((item) => String(item.caseId) === String(caseId));
 
   if (!caseRecord && window.JiraFirebase?.loadCaseById) {
@@ -42,6 +46,7 @@ async function initDetailPage() {
   status.className = "status-message success";
 }
 
+// Muestra los campos principales del caso y sus distintivos de prioridad y escalamiento.
 function renderDetailCard(caseRecord, element) {
   if (!element) return;
 
@@ -90,6 +95,7 @@ function renderDetailCard(caseRecord, element) {
   `;
 }
 
+// Dibuja la secuencia de transiciones de estado o indica que no hay cambios registrados.
 function renderTimeline(history, element) {
   if (!element) return;
 
@@ -115,12 +121,14 @@ function renderTimeline(history, element) {
     .join("");
 }
 
+// Presenta una fecha válida en formato local y conserva el valor si no puede interpretarse.
 function formatDate(value) {
   if (!value) return "Sin fecha";
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("es-ES");
 }
 
+// Escapa caracteres especiales antes de insertar datos del caso dentro de HTML.
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")

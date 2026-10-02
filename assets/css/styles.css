@@ -1,3 +1,4 @@
+/* Variables de color y elevación compartidas por todas las vistas. */
 :root {
   --bg: #f3f6fb;
   --panel: #ffffff;
@@ -13,10 +14,12 @@
   --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
+/* Incluye bordes y rellenos en el cálculo del tamaño de cada elemento. */
 * {
   box-sizing: border-box;
 }
 
+/* Define fondo, color de texto y tipografía base de la aplicación. */
 html, body {
   margin: 0;
   min-height: 100%;
@@ -25,14 +28,17 @@ html, body {
   font-family: Inter, "Segoe UI", sans-serif;
 }
 
+/* Añade espacio alrededor del contenido de página en pantallas amplias. */
 body {
   padding: 24px;
 }
 
+/* Hace que los controles hereden la tipografía de la interfaz. */
 button, input, select {
   font: inherit;
 }
 
+/* Apariencia y respuesta común de los botones. */
 button {
   cursor: pointer;
   border: 1px solid var(--line);
@@ -43,10 +49,12 @@ button {
   transition: 0.2s ease;
 }
 
+/* Eleva ligeramente el botón al pasar el puntero. */
 button:hover {
   transform: translateY(-1px);
 }
 
+/* Distingue la acción principal de las acciones secundarias. */
 button.primary {
   background: var(--primary);
   border-color: var(--primary);
@@ -58,16 +66,19 @@ button.secondary {
   color: var(--text);
 }
 
+/* Reduce los botones usados en acciones compactas. */
 button.small {
   padding: 8px 10px;
   font-size: 0.85rem;
 }
 
+/* Limita el ancho del dashboard y lo centra en la ventana. */
 .app-shell {
   max-width: 1400px;
   margin: 0 auto;
 }
 
+/* Distribuye título y acciones en el encabezado principal. */
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -76,6 +87,7 @@ button.small {
   margin-bottom: 18px;
 }
 
+/* Estilo para etiquetas cortas que anteceden a los títulos. */
 .eyebrow {
   margin: 0 0 6px;
   text-transform: uppercase;
@@ -84,11 +96,13 @@ button.small {
   color: var(--muted);
 }
 
+/* Elimina el margen superior del título principal. */
 h1 {
   margin: 0;
   font-size: clamp(1.6rem, 2.2vw, 2.2rem);
 }
 
+/* Agrupa y permite ajustar las acciones del encabezado. */
 .header-actions {
   display: flex;
   gap: 10px;
@@ -96,6 +110,7 @@ h1 {
   align-items: center;
 }
 
+/* Superficie reutilizable para filtros, gráficos y bloques de datos. */
 .card {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -103,11 +118,13 @@ h1 {
   box-shadow: var(--shadow);
 }
 
+/* Espaciado del contenedor de filtros. */
 .filters {
   padding: 16px;
   margin-bottom: 18px;
 }
 
+/* Alinea los filtros en una fila que puede envolver en varias líneas. */
 .filter-row {
   display: flex;
   flex-wrap: wrap;
@@ -115,6 +132,7 @@ h1 {
   align-items: end;
 }
 
+/* Coloca la etiqueta encima de cada control de filtrado. */
 .filter-row label {
   display: flex;
   flex-direction: column;
@@ -123,6 +141,7 @@ h1 {
   color: var(--muted);
 }
 
+/* Tamaño y apariencia de listas y fechas dentro de los filtros. */
 .filter-row select,
 .filter-row input[type="date"] {
   min-width: 170px;
@@ -133,6 +152,7 @@ h1 {
   color: var(--text);
 }
 
+/* Alinea horizontalmente las opciones de tipo casilla. */
 .checkbox-row {
   flex-direction: row !important;
   align-items: center;
@@ -141,6 +161,7 @@ h1 {
   padding: 0 6px;
 }
 
+/* Presentación base de los mensajes de estado y sus variantes por resultado. */
 .status-message {
   background: #eff6ff;
   border: 1px solid #bfdbfe;
@@ -162,6 +183,7 @@ h1 {
   color: #b91c1c;
 }
 
+/* Distribuye los indicadores en columnas adaptables. */
 .kpis-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -169,10 +191,12 @@ h1 {
   margin-bottom: 18px;
 }
 
+/* Espaciado y jerarquía del valor numérico de cada indicador. */
 .stat {
   padding: 18px 16px;
 }
 
+/* Estilo de la etiqueta que describe cada indicador. */
 .stat-label {
   display: block;
   color: var(--muted);
@@ -184,6 +208,7 @@ h1 {
   font-size: clamp(1.8rem, 2vw, 2.6rem);
 }
 
+/* Organiza los gráficos en columnas que se ajustan al espacio disponible. */
 .charts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -191,6 +216,7 @@ h1 {
   margin-bottom: 18px;
 }
 
+/* Espaciado y títulos del contenedor de cada gráfico. */
 .chart-card {
   padding: 16px;
 }
@@ -201,15 +227,18 @@ h1 {
   font-size: 1.05rem;
 }
 
+/* Reserva una altura estable para el área de dibujo de los gráficos. */
 .chart-wrap {
   position: relative;
   height: 260px;
 }
 
+/* Espaciado de la sección que contiene la tabla de casos. */
 .table-card {
   padding: 16px;
 }
 
+/* Alinea título y acciones encima de la tabla. */
 .table-header {
   display: flex;
   justify-content: space-between;
@@ -218,11 +247,13 @@ h1 {
   gap: 10px;
 }
 
+/* Permite desplazar horizontalmente tablas anchas. */
 .table-wrap {
   width: 100%;
   overflow-x: auto;
 }
 
+/* Establece el ancho mínimo y el colapso de bordes de la tabla. */
 table {
   width: 100%;
   min-width: 980px;
@@ -230,6 +261,7 @@ table {
   font-size: 0.9rem;
 }
 
+/* Espaciado, alineación y separadores para celdas de encabezado y datos. */
 th,
 td {
   padding: 10px 10px;
@@ -238,15 +270,18 @@ td {
   vertical-align: top;
 }
 
+/* Reduce el peso visual de los encabezados de columna. */
 th {
   color: var(--muted);
   font-weight: 600;
 }
 
+/* Resalta suavemente la fila señalada por el puntero. */
 tr:hover td {
   background: rgba(37, 99, 235, 0.02);
 }
 
+/* Forma y alineación común de los distintivos de estado y prioridad. */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -257,6 +292,7 @@ tr:hover td {
   font-weight: 600;
 }
 
+/* Colores semánticos para resultados normales, advertencias y errores. */
 .badge.success {
   background: rgba(22, 163, 74, 0.12);
   color: var(--success);
@@ -272,12 +308,14 @@ tr:hover td {
   color: var(--danger);
 }
 
+/* Espaciado de las superficies de datos y cronología del detalle. */
 .detail-card,
 .detail-timeline-card {
   padding: 20px;
   margin-bottom: 20px;
 }
 
+/* Distribuye identificador y distintivos en la cabecera del caso. */
 .detail-header {
   display: flex;
   justify-content: space-between;
@@ -286,12 +324,14 @@ tr:hover td {
   margin-bottom: 18px;
 }
 
+/* Permite que los distintivos se ajusten cuando no caben en una fila. */
 .detail-badges {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
+/* Distribuye los atributos del caso en columnas adaptables. */
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -299,6 +339,7 @@ tr:hover td {
   margin-top: 8px;
 }
 
+/* Presentación de cada atributo individual del caso. */
 .detail-grid > div {
   display: flex;
   flex-direction: column;
@@ -309,6 +350,7 @@ tr:hover td {
   border: 1px solid var(--line);
 }
 
+/* Estilo secundario de las etiquetas de cada atributo. */
 .detail-label {
   color: var(--muted);
   font-size: 0.8rem;
@@ -316,12 +358,14 @@ tr:hover td {
   letter-spacing: 0.06em;
 }
 
+/* Separa las entradas de la cronología del caso. */
 .timeline {
   display: grid;
   gap: 18px;
   margin-top: 12px;
 }
 
+/* Alinea el marcador y el contenido de cada cambio histórico. */
 .timeline-item {
   position: relative;
   display: flex;
@@ -329,6 +373,7 @@ tr:hover td {
   padding-left: 18px;
 }
 
+/* Dibuja el marcador circular de cada entrada temporal. */
 .timeline-dot {
   position: relative;
   width: 14px;
@@ -339,6 +384,7 @@ tr:hover td {
   box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.12);
 }
 
+/* Conecta visualmente las entradas consecutivas de la cronología. */
 .timeline-item::before {
   content: "";
   position: absolute;
@@ -349,10 +395,12 @@ tr:hover td {
   background: var(--line);
 }
 
+/* Oculta el conector después de la última entrada. */
 .timeline-item:last-child::before {
   display: none;
 }
 
+/* Superficie que contiene fecha, transición y responsable del cambio. */
 .timeline-content {
   flex: 1;
   border: 1px solid var(--line);
@@ -361,6 +409,7 @@ tr:hover td {
   padding: 12px 14px;
 }
 
+/* Distribuye el estado nuevo y la fecha en la cabecera de la entrada. */
 .timeline-topline {
   display: flex;
   justify-content: space-between;
@@ -368,22 +417,26 @@ tr:hover td {
   margin-bottom: 8px;
 }
 
+/* Atenúa los metadatos secundarios de cada cambio. */
 .timeline-content p,
 .timeline-content small {
   margin: 0;
   color: var(--muted);
 }
 
+/* Mantiene destacado el valor principal de cada evento. */
 .timeline-content strong {
   color: var(--text);
 }
 
+/* Mensaje centrado para tablas o listas sin resultados. */
 .empty-state {
   text-align: center;
   color: var(--muted);
   padding: 40px 10px;
 }
 
+/* Reorganiza encabezados y cronologías en ventanas pequeñas. */
 @media (max-width: 760px) {
   body {
     padding: 14px;

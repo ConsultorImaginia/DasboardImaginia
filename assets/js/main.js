@@ -1,3 +1,4 @@
+// Mantiene en memoria las filas importadas, casos normalizados y gráficos activos.
 const state = {
   rawRows: [],
   cases: [],
@@ -6,8 +7,10 @@ const state = {
   currentFilters: {}
 };
 
+// Reconoce estados que representan el cierre de un caso, aunque usen idiomas distintos.
 const CLOSED_PATTERN = /CERRAD|RESUELT|DONE|CLOSED|FINALIZ|COMPLET|ENTREGAD/i;
 
+// Conecta botones, filtros y controles de fecha con las acciones de la aplicación.
 function bindUi() {
   const btnLoad = document.getElementById("btnLoadFile");
   const inputFile = document.getElementById("excelInput");
@@ -21,6 +24,7 @@ function bindUi() {
   const filterEscalated = document.getElementById("filterEscalated");
   const btnExportCsv = document.getElementById("btnExportCsv");
 
+  // Abre el selector de archivos y conecta cada acción visible con su manejador.
   btnLoad?.addEventListener("click", () => inputFile?.click());
   inputFile?.addEventListener("change", handleExcelUpload);
   btnSaveFirebase?.addEventListener("click", saveCurrentCasesToFirebase);
@@ -32,6 +36,7 @@ function bindUi() {
   });
 }
 
+// Actualiza el mensaje de estado y su apariencia según el resultado de la operación.
 function setStatus(message, type = "info") {
   const el = document.getElementById("statusMessage");
   if (!el) return;
@@ -42,6 +47,7 @@ function setStatus(message, type = "info") {
   el.style.color = type === "error" ? "#b91c1c" : type === "success" ? "#166534" : "#1d4ed8";
 }
 
+// Elimina diferencias de acentos y mayúsculas para comparar encabezados y valores.
 function normalizeText(value) {
   return String(value ?? "")
     .normalize("NFD")
@@ -50,6 +56,7 @@ function normalizeText(value) {
     .toUpperCase();
 }
 
+// Convierte fechas de Excel, texto y objetos Date al formato Date de JavaScript.
 function toDate(value) {
   if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
 
@@ -72,6 +79,7 @@ function toDate(value) {
   return null;
 }
 
+// Formatea una fecha válida como AAAA-MM-DD para mostrarla y compararla con filtros.
 function fmtDate(date) {
   if (!date) return "";
   if (date instanceof Date) return date.toISOString().slice(0, 10);
@@ -82,11 +90,13 @@ function fmtDate(date) {
   return "";
 }
 
+// Calcula días completos entre fechas y evita devolver cantidades negativas.
 function daysBetween(dateA, dateB) {
   if (!(dateA instanceof Date) || !(dateB instanceof Date)) return 0;
   return Math.max(0, Math.floor((dateB - dateA) / 86400000));
 }
 
+// Homologa las prioridades conocidas y conserva el texto original para otros valores.
 function normalizePriority(value) {
   const text = String(value ?? "").trim();
   if (!text) return "Sin prioridad";
@@ -99,6 +109,7 @@ function normalizePriority(value) {
   return text;
 }
 
+// Asigna etiqueta y clase visual a una prioridad para mostrarla como distintivo.
 function getPriorityBadge(priority) {
   const value = String(priority || "Sin prioridad").trim();
   const normalized = normalizeText(value);
@@ -122,6 +133,7 @@ function getPriorityBadge(priority) {
   return { label: value || "Sin prioridad", className: "success" };
 }
 
+// Guarda los casos en el navegador para conservarlos entre recargas.
 function persistCases(cases) {
   try {
     localStorage.setItem("jira-dashboard-cases", JSON.stringify(cases));
@@ -130,6 +142,7 @@ function persistCases(cases) {
   }
 }
 
+// Recupera los casos guardados; si el almacenamiento no contiene JSON válido, devuelve una lista vacía.
 function loadCasesFromStorage() {
   try {
     return JSON.parse(localStorage.getItem("jira-dashboard-cases") || "[]");
@@ -138,20 +151,24 @@ function loadCasesFromStorage() {
   }
 }
 
+// Busca un caso por identificador en memoria y usa el almacenamiento local como respaldo.
 function getCaseById(caseId) {
   const stored = state.cases.length ? state.cases : loadCasesFromStorage();
   return stored.find((item) => String(item.caseId) === String(caseId)) || null;
 }
 
+// Lee el Excel seleccionado, construye los casos, actualiza la pantalla y registra la carga.
 async function handleExcelUpload(event) {
   const [file] = event.target.files || [];
   if (!file) return;
 
   try {
+    // Lee el archivo y convierte las filas de la primera hoja a objetos JavaScript.
     const workbook = XLSX.read(await file.arrayBuffer(), { cellDates: true });
     const sheetName = workbook.SheetNames[0];
     const rawRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: "" });
 
+    // Actualiza memoria y persistencia antes de renderizar los datos recién importados.
     state.rawRows = rawRows;
     const cases = buildCasesFromRows(rawRows);
     state.cases = cases;
@@ -160,21 +177,25 @@ async function handleExcelUpload(event) {
     renderDashboard(cases);
     populateDropdowns(cases);
 
-    setStatus(`${file.name} cargado correctamente. ${cases.length} casos �nicos detectados.`, "success");
+    setStatus(`${file.name} cargado correctamente. ${cases.length} casos únicos detectados.`, "success");
 
+    // Si Firebase está disponible, conserva el archivo y sus metadatos en la nube.
     if (window.JiraFirebase?.uploadExcelToStorage) {
       const uploadMeta = await window.JiraFirebase.uploadExcelToStorage(file);
       await window.JiraFirebase.saveUploadRecord(file.name, rawRows.length, uploadMeta.uploadId, uploadMeta.url || "");
     }
   } catch (error) {
+    // Informa fallos de lectura, conversión o almacenamiento sin detener la página.
     console.error(error);
     setStatus("No se pudo cargar el archivo. Revisa el formato o columnas del Excel.", "error");
   }
 }
 
+// Normaliza filas del Excel, agrupa el historial por caso y calcula sus métricas actuales.
 function buildCasesFromRows(rows) {
   const normalized = rows
     .map((row) => {
+      // Normaliza los encabezados para admitir diferencias de acentos y capitalización.
       const normalizedRow = {};
       Object.keys(row).forEach((header) => {
         normalizedRow[normalizeText(header)] = row[header];
@@ -203,6 +224,7 @@ function buildCasesFromRows(rows) {
     })
     .filter((row) => row.caseId);
 
+  // Reúne todas las filas que pertenecen al mismo identificador Jira.
   const grouped = {};
 
   normalized.forEach((item) => {
@@ -210,6 +232,7 @@ function buildCasesFromRows(rows) {
     grouped[item.caseId].push(item);
   });
 
+  // Ordena cada caso cronológicamente y deriva cambios de estado a partir de sus filas.
   return Object.values(grouped).map((group) => {
     group.sort((a, b) => {
       const left = a.updatedAt || a.createdAt || new Date(0);
@@ -235,6 +258,7 @@ function buildCasesFromRows(rows) {
       prevState = nextState;
     });
 
+    // Calcula antigüedad y estado de cierre usando el registro más reciente.
     const latestStateDate = latest.updatedAt || latest.createdAt || new Date();
     const currentDayCount = daysBetween(latestStateDate, new Date());
     const closed = CLOSED_PATTERN.test(latest.currentState || "");
@@ -258,6 +282,7 @@ function buildCasesFromRows(rows) {
   });
 }
 
+// Llena los filtros con los estados, responsables y prioridades presentes en los casos.
 function populateDropdowns(cases) {
   const filterState = document.getElementById("filterState");
   const filterResponsible = document.getElementById("filterResponsible");
@@ -279,6 +304,7 @@ function populateDropdowns(cases) {
   }
 }
 
+// Escapa caracteres HTML para evitar interpretar datos importados como marcado.
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -288,6 +314,7 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
+// Aplica en conjunto los filtros visibles y vuelve a dibujar el dashboard con coincidencias.
 function applyFilters() {
   const filterState = document.getElementById("filterState")?.value || "";
   const filterResponsible = document.getElementById("filterResponsible")?.value || "";
@@ -296,6 +323,7 @@ function applyFilters() {
   const dateToValue = document.getElementById("dateTo")?.value || "";
   const escalatedMode = document.getElementById("filterEscalated")?.value || "all";
 
+  // Un caso permanece solo si coincide con todos los criterios seleccionados.
   const filtered = state.cases.filter((item) => {
     const matchesState = !filterState || item.currentState === filterState;
     const matchesResponsible = !filterResponsible || item.responsible === filterResponsible;
@@ -312,6 +340,7 @@ function applyFilters() {
   renderDashboard(filtered);
 }
 
+// Actualiza los indicadores, gráficos y tabla usando el conjunto de casos recibido.
 function renderDashboard(cases) {
   const dashboardContent = document.getElementById("dashboardContent");
   if (!dashboardContent) return;
@@ -340,6 +369,7 @@ function renderDashboard(cases) {
   renderTable(cases);
 }
 
+// Cuenta los casos por estado y representa su distribución en un gráfico de dona.
 function renderEstadoChart(cases) {
   const counts = {};
   cases.forEach((item) => {
@@ -368,6 +398,7 @@ function renderEstadoChart(cases) {
   });
 }
 
+// Agrupa casos activos y cerrados por responsable en un gráfico de barras apiladas.
 function renderResponsibleChart(cases) {
   const responsableMap = {};
   cases.forEach((item) => {
@@ -402,6 +433,7 @@ function renderResponsibleChart(cases) {
   });
 }
 
+// Cuenta revisiones por fecha y muestra la evolución en un gráfico de líneas.
 function renderMovementChart(cases) {
   const groups = {};
   cases.forEach((item) => {
@@ -436,6 +468,7 @@ function renderMovementChart(cases) {
   });
 }
 
+// Evita duplicar instancias de Chart.js y crea el gráfico con su configuración nueva.
 function createOrUpdateChart(chartId, config) {
   if (!document.getElementById(chartId)) return;
 
@@ -446,6 +479,7 @@ function createOrUpdateChart(chartId, config) {
   state.charts[chartId] = new Chart(document.getElementById(chartId), config);
 }
 
+// Construye la tabla ordenada por antigüedad y muestra un estado vacío si no hay resultados.
 function renderTable(cases) {
   const table = document.getElementById("tableCases");
   if (!table) return;
@@ -459,6 +493,7 @@ function renderTable(cases) {
     .slice()
     .sort((a, b) => Number(b.ageDays || 0) - Number(a.ageDays || 0))
     .map((item) => {
+      // Resalta casos cerrados o con una permanencia prolongada en su estado actual.
       const statusClass = item.closed ? "success" : item.ageDays >= 30 ? "danger" : item.ageDays >= 15 ? "warning" : "success";
       const priorityBadge = getPriorityBadge(item.priority);
 
@@ -484,9 +519,10 @@ function renderTable(cases) {
   table.innerHTML = rows;
 }
 
+// Descarga los casos cargados como CSV y escapa comillas dentro de cada campo.
 function exportCurrentCsv() {
   const rows = state.cases;
-  const headers = ["Id JIRA", "Resumen", "Responsable", "Prioridad", "Fecha creaci�n", "Estado inicial", "Estado actual", "�ltima revisi�n", "D�as estado actual", "Cambios", "Antig�edad"];
+  const headers = ["Id JIRA", "Resumen", "Responsable", "Prioridad", "Fecha creación", "Estado inicial", "Estado actual", "Última revisión", "Días estado actual", "Cambios", "Antigüedad"];
 
   const csvRows = [headers.join(",")].concat(
     rows.map((item) => [
@@ -504,6 +540,7 @@ function exportCurrentCsv() {
     ].map((value) => `"${String(value ?? "").replace(/"/g, '""')}"`).join(","))
   );
 
+  // Genera un archivo CSV temporal, inicia la descarga y libera su URL.
   const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -513,9 +550,10 @@ function exportCurrentCsv() {
   URL.revokeObjectURL(url);
 }
 
+// Envía a Firebase los casos actuales y comunica el resultado al usuario.
 async function saveCurrentCasesToFirebase() {
   if (!state.cases.length) {
-    setStatus("No hay casos cargados todav�a.", "error");
+    setStatus("No hay casos cargados todavía.", "error");
     return;
   }
 
@@ -528,6 +566,7 @@ async function saveCurrentCasesToFirebase() {
   }
 }
 
+// Configura la vista de historial, consulta datos y aplica sus filtros en cada cambio.
 function initHistoryPage() {
   const listEl = document.getElementById("historyList");
   const filterState = document.getElementById("historyFilterState");
@@ -537,6 +576,7 @@ function initHistoryPage() {
   const filterDateTo = document.getElementById("historyDateTo");
   const filterEscalated = document.getElementById("historyEscalatedOnly");
 
+  // Prefiere los registros de Firebase y usa los guardados localmente como alternativa.
   async function loadHistory() {
     const items = await window.JiraFirebase?.loadCasesFromFirebase?.({
       state: filterState.value,
@@ -545,6 +585,7 @@ function initHistoryPage() {
       escalatedOnly: filterEscalated.value === "escalados"
     }) || loadCasesFromStorage();
 
+    // Aplica criterios de estado, responsable, prioridad, fecha y escalamiento.
     const filtered = items.filter((item) => {
       if (filterState.value && item.currentState !== filterState.value) return false;
       if (filterResponsible.value && item.responsible !== filterResponsible.value) return false;
@@ -559,10 +600,11 @@ function initHistoryPage() {
     if (!listEl) return;
 
     if (!filtered.length) {
-      listEl.innerHTML = '<div class="empty-state">No hay registros hist�ricos con los filtros actuales.</div>';
+      listEl.innerHTML = '<div class="empty-state">No hay registros históricos con los filtros actuales.</div>';
       return;
     }
 
+    // Renderiza cada caso del historial con sus metadatos y enlace al detalle.
     listEl.innerHTML = filtered
       .map((item) => `
         <article class="history-item">
@@ -575,7 +617,7 @@ function initHistoryPage() {
             <span>Responsable: ${escapeHtml(item.responsible)}</span>
             <span>Estado: ${escapeHtml(item.currentState)}</span>
             <span>Prioridad: ${escapeHtml(item.priority || "Sin prioridad")}</span>
-            <span>�ltima act.: ${fmtDate(new Date(item.lastUpdatedAt || item.createdAt))}</span>
+            <span>Última act.: ${fmtDate(new Date(item.lastUpdatedAt || item.createdAt))}</span>
           </div>
           <div class="history-actions">
             <a class="secondary small" href="detail.html?caseId=${encodeURIComponent(item.caseId)}">Ver trazabilidad</a>
@@ -592,6 +634,7 @@ function initHistoryPage() {
   loadHistory();
 }
 
+// Expone las funciones reutilizadas por otras páginas y módulos del dashboard.
 window.JiraDashboard = window.JiraDashboard || {};
 window.JiraDashboard.buildCasesFromRows = buildCasesFromRows;
 window.JiraDashboard.renderDashboard = renderDashboard;
@@ -600,6 +643,7 @@ window.JiraDashboard.getCaseById = getCaseById;
 window.JiraDashboard.persistCases = persistCases;
 window.JiraDashboard.loadCasesFromStorage = loadCasesFromStorage;
 
+// Inicializa eventos, Firebase, datos guardados y la vista identificada en el documento.
 document.addEventListener("DOMContentLoaded", () => {
   bindUi();
   window.JiraFirebase?.init?.();
