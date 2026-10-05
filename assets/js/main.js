@@ -93,7 +93,9 @@ function fmtDate(date) {
 // Calcula días completos entre fechas y evita devolver cantidades negativas.
 function daysBetween(dateA, dateB) {
   if (!(dateA instanceof Date) || !(dateB instanceof Date)) return 0;
-  return Math.max(0, Math.floor((dateB - dateA) / 86400000));
+  const startDay = Date.UTC(dateA.getUTCFullYear(), dateA.getUTCMonth(), dateA.getUTCDate());
+  const endDay = Date.UTC(dateB.getUTCFullYear(), dateB.getUTCMonth(), dateB.getUTCDate());
+  return Math.max(0, Math.floor((endDay - startDay) / 86400000));
 }
 
 // Homologa las prioridades conocidas y conserva el texto original para otros valores.
@@ -258,9 +260,10 @@ function buildCasesFromRows(rows) {
       prevState = nextState;
     });
 
-    // Calcula antigüedad y estado de cierre usando el registro más reciente.
-    const latestStateDate = latest.updatedAt || latest.createdAt || new Date();
-    const currentDayCount = daysBetween(latestStateDate, new Date());
+    // Mide el tiempo en el estado actual desde su última transición registrada.
+    const lastTransitionDate = history.length ? toDate(history[history.length - 1].date) : null;
+    const stateSinceDate = lastTransitionDate || group[0]?.createdAt || group[0]?.updatedAt || new Date();
+    const currentDayCount = daysBetween(stateSinceDate, new Date());
     const closed = CLOSED_PATTERN.test(latest.currentState || "");
 
     return {
