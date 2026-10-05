@@ -30,6 +30,14 @@
       </div>
 
       <div class="header-actions">
+
+        <button id="pr" type="button" class="primary">Imprimir PDF</button>
+        <script>
+          document.getElementById('pr').addEventListener('click', () => {
+            window.print();
+          });
+        </script>
+
         <button id="btnLoadFile" class="primary">Cargar Excel</button>
         <button id="btnHistory" class="secondary">Ver historial</button>
         <button id="btnSaveFirebase" class="secondary">Guardar en Firebase</button>
@@ -82,8 +90,8 @@
           Escalado
           <select id="filterEscalated">
             <option value="all">Todos</option>
-            <option value="escalados">Solo escalados</option>
-            <option value="no-escalados">Sin escalar</option>
+            <option value="no-escalados">Solo escalados</option>
+            <option value="escalados">Sin escalar</option>
           </select>
         </label>
       </div>
@@ -169,7 +177,7 @@
                 <th>Última revisión</th>
                 <th>Días en estado actual</th>
                 <th>Cambios</th>
-                <th>Antigüedad</th>
+                <th>Antiguedad</th>
                 <th>Trazabilidad</th>
               </tr>
             </thead>
