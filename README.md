@@ -29,7 +29,3 @@ Este proyecto separa la vista del dashboard y la vista de historial para facilit
 - `Guardar en Firebase` guarda los casos actuales en Firestore.
 - `Ver historial` abre la vista de trazabilidad histórica.
 - Los casos escalados pueden filtrarse desde la vista de historial.
-
-## Sugerencia importante
-
-Para un sistema real de trazabilidad, conviene crear una vista adicional `detail.html` para cada caso con su timeline completa. Este proyecto base te da la estructura inicial para hacerlo.
